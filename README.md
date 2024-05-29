@@ -35,4 +35,4 @@ This is a full-stack shopping mall web application built using the MERN stack.
 - **Node.js**: Runtime environment for executing JavaScript on the server.
 
 ## Document schema for MongoDB collection
-![DB](https://github.com/MayHyeyeonKim/MayDay/blob/main/be/images/db.png)
+![DB](https://github.com/MayHyeyeonKim/MayDay/blob/main/be/images/mddb.png)
