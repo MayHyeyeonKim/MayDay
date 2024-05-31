@@ -9,7 +9,7 @@ import "../style/login.style.css";
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.user);
+  const { user, loading } = useSelector((state) => state.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const error = useSelector((state) => state.user.error);
@@ -17,6 +17,7 @@ const Login = () => {
   const loginWithEmail = (event) => {
     event.preventDefault();
     //이메일,패스워드를 가지고 백엔드로 보내기
+    dispatch(userActions.loginWithEmail({email,password}))
   };
 
   const handleGoogleLogin = async (googleData) => {
