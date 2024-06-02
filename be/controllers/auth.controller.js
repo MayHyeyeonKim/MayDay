@@ -1,10 +1,12 @@
-const authController = {};
-
-const User = require('../models/User');
-const bcrypt = require("bcryptjs");
+require('dotenv').config();
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+console.log('JWT_SECRET_KEY in authController:', JWT_SECRET_KEY);
+
+const authController = {};
 
 authController.loginWithEmail = async(req, res) => {
     try {
@@ -26,15 +28,22 @@ authController.loginWithEmail = async(req, res) => {
     }
 };
 
-authController.authenticate = async(req, res, next) => {
+authController.authenticate = async (req, res, next) => {
     try {
         const tokenString = req.headers.authorization;
-        if (!tokenString) throw new Error("Authentication token does not exist!");
+        console.log("존맛탱: ", JWT_SECRET_KEY);
+        if (!tokenString) {
+            throw new Error("Authentication token does not exist!");
+        }
         const token = tokenString.replace("Bearer ", "");
+
         jwt.verify(token, JWT_SECRET_KEY, (error, payload) => {
-            if (error) return next(new Error("Invalid Token"));
+            if (error) {
+                console.log("토큰 검증 오류: ", error);
+                return res.status(401).json({ status: "fail", message: "Invalid token" });
+            }
             req.userId = payload._id;
-            next();
+            next(); // 콜백 내부에서 next 호출
         });
     } catch (error) {
         res.status(400).json({ status: "fail", message: error.message });
