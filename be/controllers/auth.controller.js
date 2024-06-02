@@ -12,7 +12,6 @@ authController.loginWithEmail = async(req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-        console.log("백엔드", user)
         if (user) {
             console.log("1")
             const isMatch = bcrypt.compareSync(password, user.password);
@@ -31,19 +30,17 @@ authController.loginWithEmail = async(req, res) => {
 authController.authenticate = async (req, res, next) => {
     try {
         const tokenString = req.headers.authorization;
-        console.log("존맛탱: ", JWT_SECRET_KEY);
         if (!tokenString) {
             throw new Error("Authentication token does not exist!");
         }
         const token = tokenString.replace("Bearer ", "");
-
         jwt.verify(token, JWT_SECRET_KEY, (error, payload) => {
             if (error) {
                 console.log("토큰 검증 오류: ", error);
                 return res.status(401).json({ status: "fail", message: "Invalid token" });
             }
             req.userId = payload._id;
-            next(); // 콜백 내부에서 next 호출
+            next(); 
         });
     } catch (error) {
         res.status(400).json({ status: "fail", message: error.message });
