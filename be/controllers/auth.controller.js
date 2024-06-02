@@ -10,10 +10,13 @@ authController.loginWithEmail = async(req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+        console.log("백엔드", user)
         if (user) {
-            const isMatch = await bcrypt.compare(password, user.password);
+            console.log("1")
+            const isMatch = bcrypt.compareSync(password, user.password);
             if (isMatch) {
-                const token = user.generateToken(); // await 제거
+                console.log("2")
+                const token = await user.generateToken();
                 return res.status(200).json({ status: "success", user, token });
             }
         }
