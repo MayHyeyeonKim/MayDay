@@ -4,7 +4,6 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-console.log('JWT_SECRET_KEY in authController:', JWT_SECRET_KEY);
 
 const authController = {};
 
@@ -42,6 +41,18 @@ authController.authenticate = async (req, res, next) => {
         });
     } catch (error) {
         res.status(400).json({ status: "fail", message: error.message });
+    }
+};
+
+authController.checkAeminPermission = async(req, res, next) => {
+    try{
+        //token값으로 유저가 권한이 있는지 없는 지 확인 가능
+        const { userId } = req
+        const user = await User.findById(userId);
+        if(user.level !== "admin") throw new Error("no permission")
+        next()
+    }catch(error){
+        res.status(400).json({status:"fail", error:error.message})
     }
 };
 
