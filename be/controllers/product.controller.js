@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Product = require("../models/Product");
 
 const PAGE_SIZE = 3
@@ -86,5 +88,21 @@ try{
     res.status(400).json({status:"fail", message:error.message})
 }
 };
+
+productController.getProductById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log("id:", id)
+        console.log("req.params:", req.params);
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw new Error("Invalid ID format");
+        }
+        const product = await Product.findById(id);
+        if (!product) throw new Error("No item found");
+        res.status(200).json({ status: "success", data: product });
+    } catch (error) {
+        return res.status(400).json({ status: "fail", error: error.message });
+    }
+    };
 
 module.exports = productController;
