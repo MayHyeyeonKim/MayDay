@@ -44,7 +44,7 @@ authController.authenticate = async (req, res, next) => {
     }
 };
 
-authController.checkAeminPermission = async(req, res, next) => {
+authController.checkAdminPermission = async(req, res, next) => {
     try{
         //token값으로 유저가 권한이 있는지 없는 지 확인 가능
         const { userId } = req

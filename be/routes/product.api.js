@@ -3,8 +3,10 @@ const authController = require("../controllers/auth.controller");
 const productController = require("../controllers/product.controller");
 const router = express.Router();
 
-router.post("/", authController.authenticate, authController.checkAeminPermission, productController.createProduct);
+router.post("/", authController.authenticate, authController.checkAdminPermission, productController.createProduct);
 
 router.get("/", productController.getProducts);
+
+router.delete("/:id", authController.authenticate, authController.checkAdminPermission, productController.deleteProduct)
 
 module.exports = router;
