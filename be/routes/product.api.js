@@ -9,4 +9,6 @@ router.get("/", productController.getProducts);
 
 router.delete("/:id", authController.authenticate, authController.checkAdminPermission, productController.deleteProduct)
 
+router.put("/:id", authController.authenticate, authController.checkAdminPermission, productController.updateProduct)
+
 module.exports = router;
