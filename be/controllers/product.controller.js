@@ -92,8 +92,6 @@ try{
 productController.getProductById = async (req, res) => {
     try {
         const id = req.params.id;
-        console.log("id:", id)
-        console.log("req.params:", req.params);
         if (!mongoose.Types.ObjectId.isValid(id)) {
             throw new Error("Invalid ID format");
         }
