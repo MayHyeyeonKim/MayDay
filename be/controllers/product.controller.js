@@ -41,36 +41,37 @@ productController.getProducts=async(req,res)=>{
     }
 };
 
-// productController.deleteProduct = async(req,res)=>{
-//     try{
-//         const id = req.params.id;
-//         console.log("Product ID to delete: ", id);
-//         console.log("1")
-//         const product = await Product.findByIdAndDelete(
-//             id,
-//             {isDeleted: true},
-//             { new: true } // This option returns the updated document
-//         );
-//         console.log("product: ", product)
-//         if(!product) throw new Error("The item does not exist!");
-//         res.status(200).json({status:"success", data:product});
-//     }catch(error){
-//         res.status(400).json({status:"fail", message:error.message})
-//     }
-// };
-productController.deleteProduct = async (req, res) => {
-    try {
-        const productId = req.params.id;
-        const product = await Product.findByIdAndUpdate(
-        { _id: productId },
-        { isDeleted: true }
+productController.deleteProduct = async(req,res)=>{
+    try{
+        const id = req.params.id;
+        console.log("Product ID to delete: ", id);
+        console.log("1")
+        const product = await Product.findByIdAndDelete(
+            id,
+            {isDeleted: true},
+            { new: true } // This option returns the updated document
         );
-        if (!product) throw new Error("No item found");
-        res.status(200).json({ status: "success" });
-    } catch (error) {
-        return res.status(400).json({ status: "fail", error: error.message });
+        console.log("product: ", product)
+        if(!product) throw new Error("The item does not exist!");
+        res.status(200).json({status:"success", data:product});
+    }catch(error){
+        res.status(400).json({status:"fail", message:error.message})
     }
-    };
+};
+// productController.deleteProduct = async (req, res) => {
+//     try {
+//         const productId = req.params.id;
+//         const product = await Product.findByIdAndUpdate(
+//         { _id: productId },
+//         { isDeleted: true }
+//         );
+//         console.log("논리삭제함")
+//         if (!product) throw new Error("No item found");
+//         res.status(200).json({ status: "success" });
+//     } catch (error) {
+//         return res.status(400).json({ status: "fail", error: error.message });
+//     }
+//     };
 
 productController.updateProduct = async(req,res)=>{
 try{
