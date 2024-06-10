@@ -1,8 +1,12 @@
 require('dotenv').config();
+const bycript = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
 
+
+const { GoogleAuth, OAuth2Client } = require('google-auth-library');
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const authController = {};
@@ -12,7 +16,7 @@ authController.loginWithEmail = async(req, res) => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
         if (user) {
-            const isMatch = bcrypt.compareSync(password, user.password);
+            const isMatch = bycript.compareSync(password, user.password);
             if (isMatch) {
                 const token = await user.generateToken();
                 return res.status(200).json({ status: "success", user, token });
@@ -21,6 +25,36 @@ authController.loginWithEmail = async(req, res) => {
         throw new Error("Invalid email or password");
     } catch (error) {
         res.status(400).json({ status: "fail", message: error.message });
+    }
+};
+
+authController.loginWithGoogle = async(req, res) => {
+    try{
+        const { token } = req.body;
+        const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { email, name } = ticket.getPayload();
+        // console.log("google oauth 정말 들고 올 수 있어?", email, name) 
+        let user = await User.findOne({email});
+
+        if (!user){
+            const randomPassword = '' + Math.floor(Math.random()*100000000);
+            const salt = await bycript.genSalt(10);
+            const newPassword = await bycript.hash(randomPassword, salt);
+            user = new User({
+                name,
+                email,
+                password: newPassword,
+            });
+            await user.save();
+        }
+        const sessionToken = await user.generateToken();
+        return res.status(200).json({status: 'success', user, token: sessionToken});
+    }catch(error){
+        res.status(400).json({status:"fail", error:error.message});
     }
 };
 
