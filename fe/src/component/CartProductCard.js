@@ -8,13 +8,11 @@ import { currencyFormat } from "../utils/number";
 
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
-
-  const handleQtyChange = () => {
-    //아이템 수량을 수정한다
+  const handleQtyChange = (id, value) => {
+    dispatch(cartActions.updateQty(id, value));
   };
-
   const deleteCart = (id) => {
-    //아이템을 지운다
+    dispatch(cartActions.deleteCartItem(id));
   };
 
   return (
@@ -22,33 +20,33 @@ const CartProductCard = ({ item }) => {
       <Row>
         <Col md={2} xs={12}>
           <img
-            src="https://lp2.hm.com/hmgoepprod?set=quality%5B79%5D%2Csource%5B%2Fb3%2F10%2Fb310d46e8f33571ea44cc4facf3cd224a90ef3d4.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BLOOKBOOK%5D%2Cres%5Bm%5D%2Chmver%5B1%5D&call=url[file:/product/main]"
+            src={item.productId.image}
             width={112}
           />
         </Col>
         <Col md={10} xs={12}>
           <div className="display-flex space-between">
-            <h3>리넨셔츠</h3>
+            <h3>{item.productId.name}</h3>
             <button className="trash-button">
               <FontAwesomeIcon
                 icon={faTrash}
                 width={24}
-                onClick={() => deleteCart("hard_code")}
+                onClick={() => deleteCart(item._id)}
               />
             </button>
           </div>
 
           <div>
-            <strong>₩ 45,000</strong>
+            <strong>$ {currencyFormat(item.productId.price)}</strong>
           </div>
-          <div>Size: Menu</div>
-          <div>Total: ₩ 45,000</div>
+          <div>Size: {item.size.toUpperCase()}</div>
+          <div>Total: $ {currencyFormat(item.productId.price * item.qty)}</div>
           <div>
             Quantity:
             <Form.Select
-              onChange={(event) => handleQtyChange()}
+              onChange={(event) => handleQtyChange(item._id, event.target.value)}
               required
-              defaultValue={1}
+              defaultValue={item.qty}
               className="qty-dropdown"
             >
               <option value={1}>1</option>

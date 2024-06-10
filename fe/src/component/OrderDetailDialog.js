@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Modal, Button, Col, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,13 +9,21 @@ import { currencyFormat } from "../utils/number";
 
 const OrderDetailDialog = ({ open, handleClose }) => {
   const selectedOrder = useSelector((state) => state.order.selectedOrder);
-  const [orderStatus, setOrderStatus] = useState(selectedOrder.status);
+  const [orderStatus, setOrderStatus] = useState(selectedOrder?.status || "");
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (selectedOrder) {
+      setOrderStatus(selectedOrder.status);
+    }
+  }, [selectedOrder]);
 
   const handleStatusChange = (event) => {
     setOrderStatus(event.target.value);
   };
-  const submitStatus = () => {
+
+  const submitStatus = (event) => {
+    event.preventDefault();
     dispatch(orderActions.updateOrder(selectedOrder._id, orderStatus));
     handleClose();
   };
@@ -23,25 +31,34 @@ const OrderDetailDialog = ({ open, handleClose }) => {
   if (!selectedOrder) {
     return <></>;
   }
+
+  const formattedDate = selectedOrder.updatedAt
+    ? new Date(selectedOrder.updatedAt).toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+    : "N/A";
+
   return (
     <Modal show={open} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Order Detail</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>예약번호: {selectedOrder.orderNum}</p>
-        <p>주문날짜: {selectedOrder.createdAt.slice(0, 10)}</p>
-        <p>이메일: {selectedOrder.userId.email}</p>
+        <p>Reservation Number: {selectedOrder.orderNum}</p>
+        <p>Order Date: {formattedDate}</p>
+        <p>Email: {selectedOrder.userId.email}</p>
         <p>
-          주소:{selectedOrder.shipTo.address + " " + selectedOrder.shipTo.city}
+        Address: {selectedOrder.shipTo.address + " " + selectedOrder.shipTo.city}
         </p>
         <p>
-          연락처:
+        Contact:
           {`${
-            selectedOrder.contact.firstName + selectedOrder.contact.lastName
+            selectedOrder.contact.firstName + " " + selectedOrder.contact.lastName
           } ${selectedOrder.contact.contact}`}
         </p>
-        <p>주문내역</p>
+        <p>Order Details</p>
         <div className="overflow-x">
           <Table>
             <thead>
@@ -65,7 +82,7 @@ const OrderDetailDialog = ({ open, handleClose }) => {
                   </tr>
                 ))}
               <tr>
-                <td colSpan={4}>총계:</td>
+                <td colSpan={4}>Total:</td>
                 <td>{currencyFormat(selectedOrder.totalPrice)}</td>
               </tr>
             </tbody>

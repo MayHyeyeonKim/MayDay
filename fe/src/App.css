@@ -11,9 +11,15 @@ body{
   
 }
 
+.welcome-message {
+  margin-right: 20px;
+  padding-right: 10px;
+  color: rgb(89, 85, 85);
+  font-weight: bold;
+}
+
 .nav-header .nav-icon {
   margin-right: 20px;
- 
 }
 .nav-icon span{
   margin-left: 10px;
@@ -90,9 +96,16 @@ body{
   background: none;
   padding-right: 30px;
 }
+
 .card{
   border:none !important;
   margin-bottom: 10px;
+}
+
+.card img {
+  width: 100%; 
+  height: 400px; 
+  object-fit: cover;
 }
 
 .choice{
@@ -127,8 +140,12 @@ body{
   width: 100%;
 }
 
+.card {
+  transition: transform 0.3s ease-in;
+}
+
 .card:hover{
-  transform: scale(1.1);
+  transform: scale(1.05);
   z-index: 1;
 }
 .hide{

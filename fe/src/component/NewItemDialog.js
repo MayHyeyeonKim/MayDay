@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Form, Modal, Button, Row, Col } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import CloudinaryUploadWidget from "../utils/CloudinaryUploadWidget";
-import { productActions } from "../action/productAction";
-import { CATEGORY, STATUS, SIZE } from "../constants/product.constants";
-import "../style/adminProduct.style.css";
-import * as types from "../constants/product.constants";
-import { commonUiActions } from "../action/commonUiAction";
+import React, { useState, useEffect } from 'react';
+import { Form, Modal, Button, Row, Col } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import CloudinaryUploadWidget from '../utils/CloudinaryUploadWidget';
+import { productActions } from '../action/productAction';
+import { CATEGORY, STATUS, SIZE } from '../constants/product.constants';
+import '../style/adminProduct.style.css';
+import * as types from '../constants/product.constants';
+import { commonUiActions } from '../action/commonUiAction';
+import { Cloudinary } from '@cloudinary/url-gen';
+
+const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_PRESET = process.env.REACT_APP_CLOUDINARY_PRESET;
 
 const InitialFormData = {
   name: "",
@@ -27,41 +31,71 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   const [stock, setStock] = useState([]);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
+
+  const [cloudName] = useState(CLOUDINARY_CLOUD_NAME);
+  const [uploadPreset] = useState(CLOUDINARY_PRESET);
+
+  const [uwConfig] = useState({
+    cloudName,
+    uploadPreset,
+  });
+
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName,
+    },
+  });
+
   const handleClose = () => {
-    //모든걸 초기화시키고;
-    // 다이얼로그 닫아주기
+    setFormData({ ...InitialFormData });
+    setStock([]);
+    setShowDialog(false);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    //재고를 입력했는지 확인, 아니면 에러
-    // 재고를 배열에서 객체로 바꿔주기
-    // [['M',2]] 에서 {M:2}로
+    if (stock.length == 0) return setStockError(true);
+
+    const totalStock = stock.reduce((total, item) =>{
+      return {...total, [item[0]]:parseInt(item[1])}
+    },{})
+
     if (mode === "new") {
-      //새 상품 만들기
+      dispatch(productActions.createProduct({ ...formData, stock: totalStock }));
+      const newFormData = { ...InitialFormData };
+      setFormData({ ...InitialFormData });
+      setStock([]);
+      setShowDialog(false);
     } else {
-      // 상품 수정하기
+      dispatch(productActions.editProduct({...formData, stock:totalStock}, selectedProduct._id));
+      setShowDialog(false);
     }
   };
 
   const handleChange = (event) => {
-    //form에 데이터 넣어주기
+    const {id, value} = event.target;
+    setFormData({...formData, [id]:value });
   };
 
   const addStock = () => {
-    //재고타입 추가시 배열에 새 배열 추가
+    setStock([...stock, []]);
   };
 
   const deleteStock = (idx) => {
-    //재고 삭제하기
+    const newStock = stock.filter((item,index)=> index !==idx);
+    setStock(newStock);
   };
 
   const handleSizeChange = (value, index) => {
-    //  재고 사이즈 변환하기
+    const newStock = [...stock];
+    newStock[index][0] = value;
+    setStock(newStock);
   };
 
   const handleStockChange = (value, index) => {
-    //재고 수량 변환하기
+    const newStock = [...stock];
+    newStock[index][1] = value;
+    setStock(newStock);
   };
 
   const onHandleCategory = (event) => {
@@ -82,21 +116,21 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   };
 
   const uploadImage = (url) => {
-    //이미지 업로드
+    setFormData({ ...formData, image: url });
   };
 
   useEffect(() => {
     if (showDialog) {
       if (mode === "edit") {
-        // 선택된 데이터값 불러오기 (재고 형태 객체에서 어레이로 바꾸기)
+        setFormData(selectedProduct);
+        const stockArray = Object.keys(selectedProduct.stock).map((size) => [size, selectedProduct.stock[size]]);
+        setStock(stockArray);
       } else {
-        // 초기화된 값 불러오기
+        setFormData({ ...InitialFormData });
+        setStock([]);
       }
     }
   }, [showDialog]);
-
-  //에러나면 토스트 메세지 보여주기
-
   return (
     <Modal show={showDialog} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -208,7 +242,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
         <Form.Group className="mb-3" controlId="Image" required>
           <Form.Label>Image</Form.Label>
-          <CloudinaryUploadWidget uploadImage={uploadImage} />
+          <CloudinaryUploadWidget uploadImage={uploadImage}/>
 
           <img
             id="uploadedimage"

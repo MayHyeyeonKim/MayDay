@@ -1,4 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { composeWithDevTools } from 'redux-devtools-extension';
+
 import userReducer from "./userReducer";
 import productReducer from "./productReducer";
 import cartReducer from "./cartReducer";
@@ -15,3 +17,4 @@ const store = configureStore({
   },
 });
 export default store;
+
