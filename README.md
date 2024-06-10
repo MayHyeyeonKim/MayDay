@@ -6,7 +6,8 @@ This is a full-stack shopping mall web application built using the MERN stack.
 ### User Features
 - **Registration**: Users can sign up using their email or external accounts.
 - **Login**: Users can log in using their email or external accounts.
-- **OAuth with Google Auth Library**: Users can also sign up and log in using their Google accounts. refer to [this documentation](https://www.npmjs.com/package/google-auth-library).
+- **OAuth with Google Auth Library**: Users can also sign up and log in using their Google accounts. <br>
+        refer to [this documentation](https://www.npmjs.com/package/google-auth-library).
 - **Profile Management**: Users can manage their personal information.
 - **Shopping Landing Page**: Users can search for items, log in, and view buttons for shopping and ordering.
 - **Product Detail Page**: Users can view detailed information about a product.
