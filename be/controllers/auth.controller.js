@@ -37,7 +37,6 @@ authController.loginWithGoogle = async(req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
         const { email, name } = ticket.getPayload();
-        // console.log("google oauth 정말 들고 올 수 있어?", email, name) 
         let user = await User.findOne({email});
 
         if (!user){
@@ -80,7 +79,6 @@ authController.authenticate = async (req, res, next) => {
 
 authController.checkAdminPermission = async(req, res, next) => {
     try{
-        //token값으로 유저가 권한이 있는지 없는 지 확인 가능
         const { userId } = req
         const user = await User.findById(userId);
         if(user.level !== "admin") throw new Error("no permission")

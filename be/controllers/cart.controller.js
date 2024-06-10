@@ -26,10 +26,10 @@ cartController.getCart = async(req,res) =>{
     try{
         const {userId} = req;
         const cart = await Cart.findOne({ userId }).populate({
-            path: "items", // populate 할 필드
+            path: "items",
             populate: {
-                path: "productId", // 참조하는 객체의 필드
-                model: "Product", // 참조할 모델의 이름
+                path: "productId",
+                model: "Product",
             },
         });
         res.status(200).json({ status: "success", data: cart.items });

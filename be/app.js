@@ -9,7 +9,7 @@ const app = express()
 require("dotenv").config()
 app.use(cors())
 app.use(bodyParser.urlencoded({extended:false}))
-app.use(bodyParser.json()) //req.body가 객체로 인식된
+app.use(bodyParser.json())
 
 app.use("/api", indexRouter)
 

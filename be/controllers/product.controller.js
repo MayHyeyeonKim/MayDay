@@ -43,13 +43,8 @@ productController.getProducts = async (req, res) => {
 		let query = Product.find(cond);
 		let response = { status: "success" };
 		if (page) {
-			query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE); //mongoose function
-			//최종 몇개 페이지
-			// 데이터가 총 몇개 있는지
-			// const totalItemNum = await product.find(cond).count();
+			query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE);
 			const totalItemNum = await Product.find(cond).count();
-			// 데이터 총 개수 /PAGE_SIZE
-			// console.log("백", page, name)
 			const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE);
 			response.totalPageNum = totalPageNum;
 		}
@@ -69,7 +64,7 @@ productController.deleteProduct = async (req, res) => {
 		const product = await Product.findByIdAndDelete(
 			id,
 			{ isDeleted: true },
-			{ new: true } // This option returns the updated document
+			{ new: true }
 		);
 		console.log("product: ", product);
 		if (!product) throw new Error("The item does not exist!");
@@ -78,20 +73,6 @@ productController.deleteProduct = async (req, res) => {
 		res.status(400).json({ status: "fail", message: error.message });
 	}
 };
-// productController.deleteProduct = async (req, res) => {
-//     try {
-//         const productId = req.params.id;
-//         const product = await Product.findByIdAndUpdate(
-//         { _id: productId },
-//         { isDeleted: true }
-//         );
-//         console.log("논리삭제함")
-//         if (!product) throw new Error("No item found");
-//         res.status(200).json({ status: "success" });
-//     } catch (error) {
-//         return res.status(400).json({ status: "fail", error: error.message });
-//     }
-//     };
 
 productController.updateProduct = async (req, res) => {
 	try {
@@ -171,7 +152,6 @@ productController.checkStock = async (item) => {
 
 productController.checkItemListStock = async (itemList) => {
 	const insufficientStockItems = [];
-	//check stock
 	await Promise.all(
 		itemList.map(async (item) => {
 			const stockCheck = await productController.checkStock(item);
