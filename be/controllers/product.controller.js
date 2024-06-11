@@ -135,33 +135,88 @@ productController.getProductById = async (req, res) => {
 	}
 };
 
+// productController.checkStock = async (item) => {
+
+// 	const product = await Product.findById(item.productId);
+
+// 	if (product.stock[item.size] < item.qty) {
+// 		return {
+// 			isVarify: false,
+// 			message: `The inventory for ${product.name} in ${item.size} is low.`,
+// 		};
+// 	}
+
+
+// 	const newStock = { ...product.stock };
+// 	newStock[item.size] -= item.qty;
+// 	product.stock = newStock;
+// 	await product.save();
+// 	return { isVerify: true };
+// };
+
 productController.checkStock = async (item) => {
-	const product = await Product.findById(item.productId);
-	if (product.stock[item.size] < item.qty) {
-		return {
-			isVarify: false,
-			message: `${product.name}의 ${item.size}재고가 부족합니다.`,
-		};
-	}
-	const newStock = { ...product.stock };
-	newStock[item.size] -= item.qty;
-	product.stock = newStock;
-	await product.save();
-	return { isVerify: true };
+    const product = await Product.findById(item.productId);
+    if (!product) {
+        return {
+            isVerify: false,
+            message: `Product not found for ID: ${item.productId}`,
+        };
+    }
+    if (product.stock[item.size] < item.qty) {
+        return {
+            isVerify: false,
+            message: `The inventory for ${product.name} in ${item.size} is low.`,
+        };
+    }
+    return { isVerify: true, product };
+};
+
+productController.processStock = async (item) => {
+    const product = await Product.findById(item.productId);
+    const newStock = { ...product.stock };
+    newStock[item.size] -= item.qty;
+    product.stock = newStock;
+    await product.save();
 };
 
 productController.checkItemListStock = async (itemList) => {
-	const insufficientStockItems = [];
-	await Promise.all(
-		itemList.map(async (item) => {
-			const stockCheck = await productController.checkStock(item);
-			if (!stockCheck.isVerify) {
-				insufficientStockItems.push({ item, message: stockCheck.message });
-			}
-			return stockCheck;
-		})
-	);
-	return insufficientStockItems;
+    const insufficientStockItems = [];
+    const validItems = [];
+
+    await Promise.all(
+        itemList.map(async (item) => {
+            const stockCheck = await productController.checkStock(item);
+            if (!stockCheck.isVerify) {
+                insufficientStockItems.push({ item, message: stockCheck.message });
+            } else {
+                validItems.push(item);
+            }
+        })
+    );
+
+    if (insufficientStockItems.length === 0) {
+        await Promise.all(
+            validItems.map(async (item) => {
+                await productController.processStock(item);
+            })
+        );
+    }
+
+    return insufficientStockItems;
 };
+
+// productController.checkItemListStock = async (itemList) => {
+// 	const insufficientStockItems = [];
+// 	await Promise.all(
+// 		itemList.map(async (item) => {
+// 			const stockCheck = await productController.checkStock(item);
+// 			if (!stockCheck.isVerify) {
+// 				insufficientStockItems.push({ item, message: stockCheck.message });
+// 			}
+// 			return stockCheck;
+// 		})
+// 	);
+// 	return insufficientStockItems;
+// };
 
 module.exports = productController;

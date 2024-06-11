@@ -50,9 +50,11 @@ authController.loginWithGoogle = async(req, res) => {
             });
             await user.save();
         }
-        const sessionToken = await user.generateToken();
+        // const sessionToken = await user.generateToken();
+        const sessionToken = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '1h' });
         return res.status(200).json({status: 'success', user, token: sessionToken});
     }catch(error){
+        console.log('Error during Google login:', error); 
         res.status(400).json({status:"fail", error:error.message});
     }
 };
