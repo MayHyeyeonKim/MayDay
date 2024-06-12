@@ -62,14 +62,11 @@ productController.getProducts = async (req, res) => {
 productController.deleteProduct = async (req, res) => {
 	try {
 		const id = req.params.id;
-		console.log("Product ID to delete: ", id);
-		console.log("1");
 		const product = await Product.findByIdAndDelete(
 			id,
 			{ isDeleted: true },
 			{ new: true }
 		);
-		console.log("product: ", product);
 		if (!product) throw new Error("The item does not exist!");
 		res.status(200).json({ status: "success", data: product });
 	} catch (error) {

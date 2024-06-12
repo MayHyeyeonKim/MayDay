@@ -102,5 +102,16 @@ orderController.updateOrder = async (req, res, next) => {
         return res.status(400).json({ status: "fail", error: error.message });
     }
 };
-
+orderController.deleteOrder = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const order = await Order.findByIdAndDelete(id);
+        if(!order){
+            return res.status(400).json({message: "Order not found"});
+        }
+        res.status(200).json({status:"success", message: "Order deleted successfully"})
+    }catch(error){
+        return res.status(400).json({status: "fail", error: error.message});
+    }
+};
 module.exports = orderController;
