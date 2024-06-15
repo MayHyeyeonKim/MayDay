@@ -1,7 +1,20 @@
 const Cart = require("../models/Cart")
 const Product = require("../models/Product")
-
+const User = require("../models/User")
 const cartController = {}
+
+cartController.getAvailableCoupons = async (req, res) => {
+    try {
+        const { userId } = req;
+        const user = await User.findById(userId).select('coupons');
+        if (!user) {
+            return res.status(404).json({ status: 'fail', error: 'User not found' });
+        }
+        res.status(200).json({ status: 'success', coupons: user.coupons });
+        } catch (error) {
+        res.status(400).json({ status: 'fail', error: error.message });
+        }
+    };
 
 cartController.addItemToCart = async(req,res)=>{
     try{

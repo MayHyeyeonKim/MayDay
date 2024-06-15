@@ -8,5 +8,6 @@ router.get("/", authController.authenticate, cartController.getCart);
 router.delete("/:id", authController.authenticate, cartController.deleteCartItem);
 router.put("/:id", authController.authenticate, cartController.editCartItem);
 router.get("/qty", authController.authenticate, cartController.getCartQty);
+router.get("/coupons", authController.authenticate, cartController.getAvailableCoupons); 
 
 module.exports = router;

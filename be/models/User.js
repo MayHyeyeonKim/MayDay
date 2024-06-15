@@ -9,6 +9,7 @@ const userSchema = Schema({
     password:{type:String, require:true},
     name:{type:String, required:true},
     level:{type:String, default:"customer"}, //2types: customer, admin
+    coupons: { type: [String], default: [] },
 }, {timestamps:true})
 
 userSchema.methods.toJSON = function(){
