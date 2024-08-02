@@ -38,6 +38,9 @@ const Navbar = ({ user }) => {
       navigate(`?name=${event.target.value}`);
     }
   };
+  const handleCategoryFilter = (event) => {
+    console.log("handleCategoryFilter실행해봄")
+  }
 
   const logout = () => {
     dispatch(userActions.logout());
@@ -93,7 +96,7 @@ const Navbar = ({ user }) => {
               <div className="nav-icon welcome-message">
               Welcome, {user.name}!
             </div>
-              <div onClick={logout} className="nav-icon">
+              <div onClick={handleCategoryFilter} className="nav-icon">
                 <FontAwesomeIcon icon={faUser} />
                 {!isMobile && (
                   <span style={{ cursor: "pointer" }}>Logout</span>
@@ -134,7 +137,7 @@ const Navbar = ({ user }) => {
           <img width={100} src="/image/hm-logo.png" alt="hm-logo.png" />
         </Link>
       </div>
-      <div className="nav-menu-area">
+      <div onClick={logout}  className="nav-menu-area">
         <ul className="menu">
           {menuList.map((menu, index) => (
             <li key={index}>

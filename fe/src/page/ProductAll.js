@@ -52,7 +52,7 @@ const ProductAll = () => {
                   {name === "" ? (
                     <h2>No products registered.</h2>
                   ) : (
-                    <h2>No products match {name}.`</h2>
+                    <h2>No products match {name}.</h2>
                   )}
                 </div>
               )}

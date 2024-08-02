@@ -21,7 +21,9 @@ mongoose
 .then(()=>console.log("mongoDB connected"))
 .catch((err)=>console.log("DB connection fail", err));
 
-app.listen(process.env.PORT || 5050, ()=>{
+// app.listen(process.env.PORT || 5050, ()=>{
+app.listen(process.env.PORT || "https://mayday-1tq5.onrender.com", ()=>{
+
     console.log("server on");
 })
 
